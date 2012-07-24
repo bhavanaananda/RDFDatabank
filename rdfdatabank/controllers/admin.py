@@ -130,17 +130,17 @@ class AdminController(BaseController):
                 g_root = config.get("granary.uri_root", "info:")
                 c.silo = ag.granary.get_rdf_silo(silo, uri_base="%s%s/datasets/" % (g_root, silo))
                 ag.granary._register_silos()
-                kw = {}
-                for term in accepted_params:
-                    if term in params:
-                        kw[term] = params[term]       
-                kw['owners'] = ','.join(owners)
-                kw['administrators'] = ','.join(admins)
-                kw['managers'] = ','.join(managers)
-                kw['submitters'] = ','.join(submitters)
+                #kw = {}
+                #for term in accepted_params:
+                #    if term in params:
+                #        kw[term] = params[term]       
+                params['owners'] = ','.join(owners)
+                params['administrators'] = ','.join(admins)
+                params['managers'] = ','.join(managers)
+                params['submitters'] = ','.join(submitters)
                 du = ag.granary.disk_usage_silo(silo)
-                kw['disk_usage'] = du
-                ag.granary.describe_silo(silo, **kw)
+                params['disk_usage'] = du
+                ag.granary.describe_silo(silo, **params)
                 ag.granary.sync()
 
                 # Add silo to database
@@ -306,8 +306,10 @@ class AdminController(BaseController):
 
             # Update silo info
             updateMetadata = False
-            for term in accepted_params:
-                if term in params and not term in ['owners', 'administrators', 'managers', 'submitters'] and params[term]:
+#            for term in accepted_params:
+#                if term in params and not term in ['owners', 'administrators', 'managers', 'submitters'] and params[term]:
+            for term in params:
+                if  not term in ['owners', 'administrators', 'managers', 'submitters'] and params[term]:
                     c.kw[term] = params[term]
                     updateMetadata = True 
             if new_owners or new_admins or new_managers or new_submitters or updateMetadata:
